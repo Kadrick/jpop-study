@@ -1,0 +1,32 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  entry: CollectionEntry<"notes">;
+}
+
+const { entry } = Astro.props;
+const { youtube, spotify, musixmatch, title, artist } = entry.data;
+const track = spotify.match(/track\/([A-Za-z0-9]+)/)?.[1];
+---
+
+{
+  track && (
+    <figure class="player">
+      <iframe
+        src={`https://open.spotify.com/embed/track/${track}`}
+        title={`${artist} 「${title}」`}
+        height="152"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+      />
+    </figure>
+  )
+}
+<ul class="outlinks">
+  <li><a href={spotify} rel="noopener noreferrer">스포티파이</a></li>
+  <li><a href={musixmatch} rel="noopener noreferrer">Musixmatch 가사</a></li>
+  <li>
+    <a href={`https://www.youtube.com/watch?v=${youtube}`} rel="noopener noreferrer">공식 영상</a>
+  </li>
+</ul>

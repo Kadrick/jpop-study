@@ -1,0 +1,68 @@
+---
+import "../styles/global.css";
+import { adsense, site } from "../config";
+import { href } from "../lib/url";
+
+interface Props {
+  title: string;
+  description?: string;
+  current?: "notes" | "words" | "kanji" | "about";
+}
+
+const { title, description = site.description, current } = Astro.props;
+const pageTitle = title === site.name ? site.name : `${title} · ${site.name}`;
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f3efe7" />
+    <link rel="icon" href={href("favicon.svg")} type="image/svg+xml" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Noto+Serif+JP:wght@500;600&family=Noto+Serif+KR:wght@500;600&display=swap"
+    />
+    {
+      adsense.client && (
+        <script
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsense.client}`}
+          crossorigin="anonymous"
+        />
+      )
+    }
+  </head>
+  <body>
+    <a class="skip" href="#content">본문으로</a>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="wordmark" href={href()}><span>곡</span> 노트</a>
+        <nav aria-label="주요">
+          <a href={href()} aria-current={current === "notes" ? "page" : undefined}>글</a>
+          <a href={href("words")} aria-current={current === "words" ? "page" : undefined}>단어</a>
+          <a href={href("kanji")} aria-current={current === "kanji" ? "page" : undefined}>한자</a>
+          <a href={href("about")} aria-current={current === "about" ? "page" : undefined}>이 노트</a>
+        </nav>
+      </div>
+    </header>
+    <main id="content" class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>가사 전문은 Musixmatch에 두고, 여기에는 듣고 나서 적은 말만 남긴다.</p>
+      </div>
+    </footer>
+    </body>
+</html>

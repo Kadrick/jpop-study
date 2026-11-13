@@ -1,0 +1,30 @@
+---
+import { adsense } from "../config";
+
+interface Props {
+  slot: "afterPlayer" | "afterNote";
+}
+
+const { slot } = Astro.props;
+const id = adsense.slots[slot];
+const show = Boolean(adsense.client && id);
+---
+
+{
+  show && (
+    <aside class="ad" aria-label="광고">
+      <span class="ad-label">광고</span>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={adsense.client}
+        data-ad-slot={id}
+        data-ad-format="horizontal"
+        data-full-width-responsive="true"
+      />
+      <script is:inline>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </aside>
+  )
+}

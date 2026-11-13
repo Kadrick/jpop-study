@@ -1,0 +1,33 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { site } from "../config";
+import { dot } from "../lib/format";
+import { href } from "../lib/url";
+
+const notes = (await getCollection("notes")).sort(
+  (a, b) => b.data.noted.getTime() - a.data.noted.getTime(),
+);
+---
+
+<Base title={site.name} current="notes">
+  <p class="lede">일본 노래를 들으며 단어와 한자를 적는다. 한 곡씩.</p>
+  <ul class="note-list">
+    {
+      notes.map((note) => (
+        <li>
+          <time class="when" datetime={note.data.noted.toISOString()}>
+            {dot(note.data.noted)}
+          </time>
+          <h2>
+            <a href={href(`notes/${note.id}/`)}>
+              <span lang="ja">{note.data.title}</span>
+            </a>
+          </h2>
+          <p class="artist">{note.data.artist}</p>
+          <p class="summary">{note.data.summary}</p>
+        </li>
+      ))
+    }
+  </ul>
+</Base>

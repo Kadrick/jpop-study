@@ -1,0 +1,42 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { href } from "../lib/url";
+
+const notes = (await getCollection("notes")).sort(
+  (a, b) => b.data.noted.getTime() - a.data.noted.getTime(),
+);
+
+const rows = notes.flatMap((note) =>
+  note.data.words.map((word) => ({ note, word })),
+);
+---
+
+<Base title="단어" description="곡을 들으며 적어 둔 단어." current="words">
+  <h1 class="lede">단어</h1>
+  <ul class="index">
+    {
+      rows.map(({ note, word }) => (
+        <li>
+          <p class="term">
+            <span lang="ja">{word.word}</span>
+            {word.reading && (
+              <span class="reading" lang="ja">
+                {word.reading}
+              </span>
+            )}
+          </p>
+          <p class="meaning">{word.meaning}</p>
+          <p class="note">{word.note}</p>
+          <p class="artist">
+            <a href={href(`notes/${note.id}/`)}>
+              <span lang="ja">{note.data.title}</span>
+            </a>
+            {" · "}
+            {note.data.artist}
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</Base>

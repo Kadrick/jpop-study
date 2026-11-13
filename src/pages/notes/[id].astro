@@ -1,0 +1,76 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Listen from "../../components/Listen.astro";
+import AdSlot from "../../components/AdSlot.astro";
+import { dot } from "../../lib/format";
+import { href } from "../../lib/url";
+
+export async function getStaticPaths() {
+  const notes = await getCollection("notes");
+  return notes.map((note) => ({
+    params: { id: note.id },
+    props: { note },
+  }));
+}
+
+const { note } = Astro.props;
+const { Content } = await render(note);
+const { title, artist, album, noted, summary } = note.data;
+---
+
+<Base title={title} description={`${artist}. ${summary}`} current="notes">
+  <article class="article">
+    <p class="kicker">{artist}</p>
+    <h1 lang="ja">{title}</h1>
+    <p class="meta">{album} · 메모 {dot(noted)}</p>
+    <Listen entry={note} />
+    <AdSlot slot="afterPlayer" />
+    <div class="prose">
+      <Content />
+    </div>
+    <AdSlot slot="afterNote" />
+    <h2 class="section-title">단어</h2>
+    <ul class="words">
+      {
+        note.data.words.map((item) => (
+          <li>
+            <p class="term">
+              <span lang="ja">{item.word}</span>
+              {item.reading && (
+                <span class="reading" lang="ja">
+                  {item.reading}
+                </span>
+              )}
+            </p>
+            <p class="meaning">{item.meaning}</p>
+            <p class="note">{item.note}</p>
+          </li>
+        ))
+      }
+    </ul>
+    <h2 class="section-title">한자</h2>
+    <ul class="kanji">
+      {
+        note.data.kanji.map((item) => (
+          <li>
+            <p class="glyph" lang="ja">{item.char}</p>
+            <p class="reads">
+              <span lang="ja">{item.on}</span>
+              {item.kun && (
+                <>
+                  {" · "}
+                  <span lang="ja">{item.kun}</span>
+                </>
+              )}
+            </p>
+            <p class="meaning">
+              {item.meaning} <span class="level">{item.level}</span>
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="back"><a href={href()}>다른 글</a></p>
+  </article>
+</Base>

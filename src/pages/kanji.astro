@@ -1,0 +1,41 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import { href } from "../lib/url";
+
+const notes = await getCollection("notes");
+
+const rows = notes.flatMap((note) =>
+  note.data.kanji.map((kanji) => ({ note, kanji })),
+);
+---
+
+<Base title="한자" description="곡 메모에 나온 한자." current="kanji">
+  <h1 class="lede">한자</h1>
+  <ul class="kanji">
+    {
+      rows.map(({ note, kanji }) => (
+        <li>
+          <p class="glyph" lang="ja">{kanji.char}</p>
+          <p class="reads">
+            <span lang="ja">{kanji.on}</span>
+            {kanji.kun && (
+              <>
+                {" · "}
+                <span lang="ja">{kanji.kun}</span>
+              </>
+            )}
+          </p>
+          <p class="meaning">
+            {kanji.meaning} <span class="level">{kanji.level}</span>
+          </p>
+          <p class="artist">
+            <a href={href(`notes/${note.id}/`)}>
+              <span lang="ja">{note.data.title}</span>
+            </a>
+          </p>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
